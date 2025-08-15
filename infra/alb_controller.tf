@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "alb_sa_assume" {
     }
     condition {
       test     = "StringEquals"
-      variable = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "") ~ ":sub"
+      variable = "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub"
       values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
   }
