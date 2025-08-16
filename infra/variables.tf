@@ -15,7 +15,7 @@ variable "vpc_cidr" {
 
 variable "node_instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t2.medium"
 }
 
 variable "node_min_size" {
