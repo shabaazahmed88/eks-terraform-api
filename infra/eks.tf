@@ -136,12 +136,14 @@ resource "aws_iam_role_policy_attachment" "node_AmazonEC2ContainerRegistryReadOn
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# Managed node group (in private subnets)
+# Managed node group (put nodes in public subnets for quick demo)
 resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-ng"
   node_role_arn   = aws_iam_role.eks_node.arn
-  subnet_ids      = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+
+  # 👈 switch to public subnets
+  subnet_ids      = [aws_subnet.public_a.id, aws_subnet.public_b.id]
 
   scaling_config {
     desired_size = var.node_desired_size
@@ -149,12 +151,6 @@ resource "aws_eks_node_group" "this" {
     max_size     = var.node_max_size
   }
 
-  instance_types = [var.node_instance_type]
-
-  depends_on = [
-    aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.node_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly
-  ]
+  # use a small/free eligible type if you're on free tier
+  instance_types = [var.node_instance_type] # e.g., t3.micro or t2.micro
 }
-

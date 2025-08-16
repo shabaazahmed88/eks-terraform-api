@@ -14,7 +14,7 @@ export AWS_REGION=ap-south-1
 export APP_NAME=imago-api
 export ECR_REPO=$APP_NAME
 export CLUSTER_NAME=imago-c3
-
+844840482318.dkr.ecr.ap-south-1.amazonaws.com/imago-api:v1
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION || true
 
@@ -27,14 +27,7 @@ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:v1
 export IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:v1
 ```
 
-## 2) (Optional) TLS & DNS
-- If you have a domain, request/validate an **ACM cert** for `api.yourdomain.com` (same region).
-- Set:
-```bash
-export DNS_NAME=api.yourdomain.com
-export ACM_CERT_ARN=arn:aws:acm:...:certificate/xxxxxxxx
-```
-- If you **don’t** have a domain/cert, you can skip these; the Ingress will use **HTTP** and you can access via the ALB hostname.
+
 
 ## 3) Apply Terraform (create EKS, install ALB controller, deploy app)
 From `infra/`:
@@ -43,7 +36,7 @@ cd infra
 
 terraform init
 
-terraform apply -auto-approve   -var "region=$AWS_REGION"   -var "cluster_name=$CLUSTER_NAME"   -var "image_uri=$IMAGE_URI"   -var "dns_name=${DNS_NAME:-null}"   -var "acm_cert_arn=${ACM_CERT_ARN:-null}"
+terraform apply -auto-approve   -var "region=$AWS_REGION"   -var "cluster_name=$CLUSTER_NAME"   -var "image_uri=$IMAGE_URI"   
 ```
 
 ## 4) Test
